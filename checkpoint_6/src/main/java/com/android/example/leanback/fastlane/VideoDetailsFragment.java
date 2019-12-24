@@ -47,12 +47,23 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
+/**
+ * 影片详情页Fragment,继承自 DetailsFragment
+ * 主要控制 DetailsOverviewRow
+ *
+ * In VideoDetailsFragment, need to do several things:
+ * - Define the details presenter
+ * - Load the movie thumbnail image
+ * - Create a DetailsOverviewRow to display video details
+ * - Create a presenter to bind the video data to the view
+ * - Add a ListRow for recommended items
+ * - Handle user actions
+ */
 public class VideoDetailsFragment extends DetailsFragment {
 
     private Video selectedVideo;
     private static final int DETAIL_THUMB_WIDTH = 274;
     private static final int DETAIL_THUMB_HEIGHT = 274;
-
     private static final int ACTION_PLAY = 1;
     private static final int ACTION_WATCH_LATER = 2;
 
@@ -62,7 +73,9 @@ public class VideoDetailsFragment extends DetailsFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        selectedVideo = (Video) getActivity().getIntent().getSerializableExtra(Video.INTENT_EXTRA_VIDEO);
+        selectedVideo = (Video) getActivity()
+                .getIntent()
+                .getSerializableExtra(Video.INTENT_EXTRA_VIDEO);
         (mRowBuilderTask = new DetailRowBuilderTask()).execute(selectedVideo);
 
         bgHelper = new BackgroundHelper(getActivity());
@@ -78,12 +91,16 @@ public class VideoDetailsFragment extends DetailsFragment {
         super.onStop();
     }
 
+    /**
+     * To load the thumbnail bitmap
+     */
     private class DetailRowBuilderTask extends AsyncTask<Video, Integer, DetailsOverviewRow> {
 
         @Override
         protected DetailsOverviewRow doInBackground(Video... videos) {
             DetailsOverviewRow row = new DetailsOverviewRow(videos[0]);
             try {
+                // the Picasso library helps us dealing with images
                 Bitmap poster = Picasso.with(getActivity())
                         .load(videos[0].getThumbUrl())
                         .resize(dpToPx(DETAIL_THUMB_WIDTH, getActivity().getApplicationContext()),

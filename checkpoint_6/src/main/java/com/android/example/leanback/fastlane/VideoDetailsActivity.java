@@ -21,6 +21,9 @@ import android.os.Bundle;
 
 import com.android.example.leanback.R;
 
+/**
+ * Specifying the Activity consists of a single fragment(VideoDetailsFragment).
+ */
 public class VideoDetailsActivity extends Activity {
 
     /**

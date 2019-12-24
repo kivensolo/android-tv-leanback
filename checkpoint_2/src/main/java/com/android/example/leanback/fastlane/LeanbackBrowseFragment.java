@@ -43,7 +43,7 @@ public class LeanbackBrowseFragment extends BrowseFragment {
     private ArrayObjectAdapter mRowsAdapter;
 
     private static final String[] HEADERS = new String[]{
-            "Featured", "Popular", "Editor's choice"
+            "Featured", "Popular", "Editor's choice","KingZ Test"
     };
 
     @Override
@@ -56,18 +56,15 @@ public class LeanbackBrowseFragment extends BrowseFragment {
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         setAdapter(mRowsAdapter);
 
-        Context ctx;
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1){
-            ctx = getActivity().getBaseContext();
-        }else{
-            ctx = getContext();
-        }
-        setBrandColor(ContextCompat.getColor(ctx, R.color.primary));
-        setBadgeDrawable(ContextCompat.getDrawable(ctx, R.drawable.filmi));
+        setBrandColor(ContextCompat.getColor(getContext(), R.color.primary));
+        setBadgeDrawable(ContextCompat.getDrawable(getContext(), R.drawable.filmi));
 
         for (int position = 0; position < HEADERS.length; position++) {
             ObjectAdapter rowContents = new CursorObjectAdapter((new SinglePresenterSelector(new CardPresenter())));
-            VideoDataManager manager = new VideoDataManager(getActivity(), getLoaderManager(), VideoItemContract.VideoItem.buildDirUri(), rowContents);
+            VideoDataManager manager = new VideoDataManager(getActivity(),
+                    getLoaderManager(),
+                    VideoItemContract.VideoItem.buildDirUri(),
+                    rowContents);
             manager.startDataLoading();
 
             HeaderItem headerItem = new HeaderItem(position, HEADERS[position]);

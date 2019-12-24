@@ -23,6 +23,10 @@ import android.util.Log;
 import com.android.example.leanback.R;
 import com.android.example.leanback.data.Video;
 
+/**
+ * Leanback框架提供了AbstractDetailsDescriptionPresenter类来实现自定义的Presenter，
+ * 用于绑定DetailOverviewRow的数据。
+ */
 public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
 
     private final Context mContext;

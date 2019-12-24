@@ -99,6 +99,9 @@ public class CardPresenter extends Presenter {
 
     }
 
+    /**
+     * Create a Picasso Target to handle image loading
+     */
     public static class PicassoImageCardViewTarget implements Target {
         private ImageCardView mImageCardView;
 

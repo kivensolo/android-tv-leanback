@@ -64,7 +64,7 @@ public class VideoItemContract {
     public static class VideoItem implements VideoItemColumns {
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.com.android.example.leanback.video_item";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.com.android.example.leanback.video_item";
-        public static final String DEFAULT_SORT = TITLE + " ASC";
+        public static final String DEFAULT_SORT = TITLE + " ASC"; //order by title asc
 
         /**
          * Matches: /videoitem/

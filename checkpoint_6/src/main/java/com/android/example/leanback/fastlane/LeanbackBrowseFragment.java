@@ -32,6 +32,7 @@ import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v17.leanback.widget.SinglePresenterSelector;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 
 import com.android.example.leanback.R;
@@ -60,6 +61,7 @@ public class LeanbackBrowseFragment extends BrowseFragment {
     }
 
     public void init() {
+        // Create an ObjectAdapter to define how to render the content that we'll pull from our database.
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         setAdapter(mRowsAdapter);
 
@@ -68,7 +70,10 @@ public class LeanbackBrowseFragment extends BrowseFragment {
 
         for (int position = 0; position < HEADERS.length; position++) {
             ObjectAdapter rowContents = new CursorObjectAdapter((new SinglePresenterSelector(new CardPresenter())));
-            VideoDataManager manager = new VideoDataManager(getActivity(), getLoaderManager(), VideoItemContract.VideoItem.buildDirUri(), rowContents);
+            VideoDataManager manager = new VideoDataManager(getActivity(),
+                    getLoaderManager(),
+                    VideoItemContract.VideoItem.buildDirUri(),
+                    rowContents);
             manager.startDataLoading();
 
             HeaderItem headerItem = new HeaderItem(position, HEADERS[position]);
@@ -93,7 +98,8 @@ public class LeanbackBrowseFragment extends BrowseFragment {
         return new OnItemViewClickedListener() {
 
             @Override
-            public void onItemClicked(Presenter.ViewHolder viewHolder, Object o, RowPresenter.ViewHolder viewHolder2, Row row) {
+            public void onItemClicked(Presenter.ViewHolder viewHolder, Object o,
+                                      RowPresenter.ViewHolder viewHolder2, Row row) {
 
                 Intent intent = new Intent(getActivity(), VideoDetailsActivity.class);
                 intent.putExtra(Video.INTENT_EXTRA_VIDEO, (Serializable) o);
@@ -109,7 +115,9 @@ public class LeanbackBrowseFragment extends BrowseFragment {
             public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                        RowPresenter.ViewHolder rowViewHolder, Row row) {
                 if (item instanceof Video) {
-                    bgHelper.setBackgroundUrl(((Video) item).getThumbUrl());
+                    String thumbUrl = ((Video) item).getThumbUrl();
+                    Log.d("ItemSelected","thumbUrl = " + thumbUrl);
+                    bgHelper.setBackgroundUrl(thumbUrl);
                     bgHelper.startBackgroundTimer();
                 }
 
