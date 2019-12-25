@@ -33,6 +33,7 @@ import com.android.example.leanback.R;
 import com.android.example.leanback.data.Video;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
@@ -51,11 +52,18 @@ public class CardPresenter extends Presenter {
 
         private ImageCardView mCardView;
         private Drawable mDefaultCardImage;
+        private RequestOptions sharedOptions;
 
         public ViewHolder(View view) {
             super(view);
             mCardView = (ImageCardView) view;
             mDefaultCardImage = mContext.getResources().getDrawable(R.drawable.filmi);
+            sharedOptions = new RequestOptions()
+                    .placeholder(R.drawable.ic_av_play_arrow) //设置“加载中”状态时显示的图片
+                    .override(CARD_WIDTH, CARD_HEIGHT) //指定大小，无视imageView大小
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)   //既缓存全尺寸又缓存其他尺寸
+                    .error(mDefaultCardImage); //设置“加载失败”状态时显示的图片
         }
 
         public ImageCardView getCardView() {
@@ -64,18 +72,13 @@ public class CardPresenter extends Presenter {
 
         protected void updateCardViewImage(String url) {
 
-            RequestOptions requestOptions = new RequestOptions()
-                    .placeholder(R.drawable.ic_av_play_arrow) //设置“加载中”状态时显示的图片
-                    .override(CARD_WIDTH, CARD_HEIGHT) //指定大小，无视imageView大小
-                    .centerCrop()
-                    .error(mDefaultCardImage); //设置“加载失败”状态时显示的图片
-
-            Glide.with(mContext)
-                    .asBitmap()
+            GlideApp.with(mContext)
+//                    .asBitmap()
                     .load(url)
-                    .listener(new PictureLoadListener())
-                    .apply(requestOptions)
-                    .transition(BitmapTransitionOptions.withCrossFade(400))//适用于Bitmap，过渡动画持续400ms
+//                    .load("http://p1.pstatp.com/large/166200019850062839d3")
+//                    .listener(new PictureLoadListener())
+//                    .transition(BitmapTransitionOptions.withCrossFade(400))//适用于Bitmap，过渡动画持续400ms
+                    .apply(sharedOptions)
                     .into(mCardView.getMainImageView());
         }
     }

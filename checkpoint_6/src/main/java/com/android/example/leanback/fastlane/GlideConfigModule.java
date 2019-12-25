@@ -26,12 +26,18 @@ public class GlideConfigModule extends AppGlideModule {
         //磁盘缓存配置（默认缓存大小250M，默认保存在内部存储中）
 
         //设置磁盘缓存保存在外部存储，且指定缓存大小
-        builder.setDiskCache(new ExternalCacheDiskCacheFactory(context, 20 * 1024));
+        // FIXME 加了这个，请求网络图片的时候，就会在AssetFileDescriptorLocalUriFetcher.loadResource.java:22 处报错
+//        builder.setDiskCache(new ExternalCacheDiskCacheFactory(context, 20 * 1024));
 
         //设置内存缓存大小
 //        builder.setMemoryCache(new LruResourceCache(memoryCacheSize));
         //设置Bitmap池大小
 //        builder.setBitmapPool(new LruBitmapPool(bitmapPoolSize));
+    }
+
+    @Override
+    public boolean isManifestParsingEnabled() {
+        return false;
     }
 
     @Override

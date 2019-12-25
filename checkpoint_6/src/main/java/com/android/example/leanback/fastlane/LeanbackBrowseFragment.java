@@ -51,7 +51,7 @@ public class LeanbackBrowseFragment extends BrowseFragment {
     private BackgroundHelper bgHelper;
 
     private static final String[] HEADERS = new String[]{
-            "Featured", "Popular", "Editor's choice"
+            "Featured", "Popular", "Leanback choice"
     };
 
     @Override
