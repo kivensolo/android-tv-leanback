@@ -17,18 +17,22 @@
 package com.android.example.leanback.fastlane;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
-import com.android.example.leanback.BlurTransform;
 import com.android.example.leanback.R;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 
+/**
+ * 背景图更换Hepler
+ */
 public class BackgroundHelper {
 
     private final Handler mHandler = new Handler();
@@ -48,21 +52,27 @@ public class BackgroundHelper {
     private String mBackgroundURL;
 
     private Drawable mDefaultBackground;
-    private Target mBackgroundTarget;
+    private GlideBackgroundManagerTarget mBackgroundTarget;
+    private RequestOptions options;
 
     public BackgroundHelper(Activity mActivity) {
         this.mActivity = mActivity;
     }
 
-    private long BACKGROUND_UPDATE_DELAY = 200L;
-
     public void prepareBackgroundManager() {
         mBackgroundManager = BackgroundManager.getInstance(mActivity);
         mBackgroundManager.attach(mActivity.getWindow());
-        mBackgroundTarget = new PicassoBackgroundManagerTarget(mBackgroundManager);
+        mBackgroundTarget = new GlideBackgroundManagerTarget(mBackgroundManager);
         mDefaultBackground = ContextCompat.getDrawable(mActivity, R.drawable.default_background);
         mMetrics = new DisplayMetrics();
         mActivity.getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+
+        options= new RequestOptions()
+                .centerCrop()
+                .override(mMetrics.widthPixels, mMetrics.heightPixels)
+//                .transform(BlurTransform.getInstance(mActivity))
+//                .transform(new BlurTransformation())
+                .error(mDefaultBackground);
     }
 
     public void release() {
@@ -75,26 +85,11 @@ public class BackgroundHelper {
         scheduleUpdate();
     }
 
-    static class PicassoBackgroundManagerTarget implements Target {
+    static class GlideBackgroundManagerTarget extends SimpleTarget<Drawable> {
         BackgroundManager mBackgroundManager;
 
-        public PicassoBackgroundManagerTarget(BackgroundManager backgroundManager) {
-            this.mBackgroundManager = backgroundManager;
-        }
-
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom loadedFrom) {
-            this.mBackgroundManager.setBitmap(bitmap);
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable drawable) {
-            this.mBackgroundManager.setDrawable(drawable);
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable drawable) {
-            // Do nothing, default_background manager has its own transitions
+        public GlideBackgroundManagerTarget(BackgroundManager mBackgroundManager) {
+            this.mBackgroundManager = mBackgroundManager;
         }
 
         @Override
@@ -102,7 +97,7 @@ public class BackgroundHelper {
             if (this == o) { return true; }
             if (o == null || getClass() != o.getClass()) { return false; }
 
-            PicassoBackgroundManagerTarget that = (PicassoBackgroundManagerTarget) o;
+            GlideBackgroundManagerTarget that = (GlideBackgroundManagerTarget) o;
 
             return mBackgroundManager.equals(that.mBackgroundManager);
         }
@@ -110,6 +105,26 @@ public class BackgroundHelper {
         @Override
         public int hashCode() {
             return mBackgroundManager.hashCode();
+        }
+
+        @Override
+        public void onLoadStarted(@Nullable Drawable placeholder) {
+            Log.d("updateBackground","onLoadStarted");
+            super.onLoadStarted(placeholder);
+        }
+
+        @Override
+        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+            Log.e("updateBackground","onLoadFailed");
+            mBackgroundManager.setDrawable(errorDrawable);
+            super.onLoadFailed(errorDrawable);
+        }
+
+        @Override
+        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+            Log.d("updateBackground","onResourceReady");
+            mBackgroundManager.setDrawable(resource);
+
         }
     }
 
@@ -122,12 +137,9 @@ public class BackgroundHelper {
     }
 
     protected void updateBackground(String url) {
-        Picasso.with(mActivity)
+        GlideApp.with(mActivity)
                 .load(url)
-                .resize(mMetrics.widthPixels, mMetrics.heightPixels)
-                .centerCrop()
-                .transform(BlurTransform.getInstance(mActivity))
-                .error(mDefaultBackground)
+                .apply(options)
                 .into(mBackgroundTarget);
     }
 
@@ -141,14 +153,6 @@ public class BackgroundHelper {
 
     private void scheduleUpdate() {
         mHandler.removeCallbacks(mUpdateBackgroundAction);
-        mHandler.postDelayed(mUpdateBackgroundAction, BACKGROUND_UPDATE_DELAY);
+        mHandler.postDelayed(mUpdateBackgroundAction, 200L);
     }
-
-    /**
-     * Deprecated, simply use {@link #setBackgroundUrl(String)}
-     */
-    @Deprecated
-    public void startBackgroundTimer() {
-    }
-
 }

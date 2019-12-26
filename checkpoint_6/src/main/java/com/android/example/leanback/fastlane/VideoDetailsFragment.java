@@ -35,7 +35,6 @@ import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.SinglePresenterSelector;
 import android.support.v17.leanback.widget.SparseArrayObjectAdapter;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.example.leanback.PlayerActivity;
@@ -43,27 +42,27 @@ import com.android.example.leanback.R;
 import com.android.example.leanback.data.Video;
 import com.android.example.leanback.data.VideoDataManager;
 import com.android.example.leanback.data.VideoItemContract;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.request.FutureTarget;
 
-import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
- * 影片详情页Fragment,继承自 DetailsFragment
+ * 影片详情页Fragment,继承自 leanback库的DetailsFragment
  * 主要控制 DetailsOverviewRow
- *
+ * <p>
  * In VideoDetailsFragment, need to do several things:
- * - Define the details presenter
- * - Load the movie thumbnail image
- * - Create a DetailsOverviewRow to display video details
- * - Create a presenter to bind the video data to the view
- * - Add a ListRow for recommended items
+ * - 定义details的present
+ * - 加载影片的缩略图
+ * - 创建一个 DetailsOverviewRow 来显示影片详情
+ * - 创建presenter来将video的数据绑定到view上
+ * - 添加一个推荐数据的ListRow
  * - Handle user actions
  */
 public class VideoDetailsFragment extends DetailsFragment {
 
     private Video selectedVideo;
-    private static final int DETAIL_THUMB_WIDTH = 274;
-    private static final int DETAIL_THUMB_HEIGHT = 274;
+    private static final int DETAIL_THUMB_WIDTH = 225;
+    private static final int DETAIL_THUMB_HEIGHT = 225;
     private static final int ACTION_PLAY = 1;
     private static final int ACTION_WATCH_LATER = 2;
 
@@ -98,18 +97,26 @@ public class VideoDetailsFragment extends DetailsFragment {
 
         @Override
         protected DetailsOverviewRow doInBackground(Video... videos) {
-            DetailsOverviewRow row = new DetailsOverviewRow(videos[0]);
+            final DetailsOverviewRow row = new DetailsOverviewRow(videos[0]);
             try {
                 // the Picasso library helps us dealing with images
-                Bitmap poster = Picasso.with(getActivity())
+//                final Bitmap poster = Picasso.with(getActivity())
+//                        .load(videos[0].getThumbUrl())
+//                        .resize(dpToPx(DETAIL_THUMB_WIDTH, getActivity().getApplicationContext()),
+//                                dpToPx(DETAIL_THUMB_HEIGHT, getActivity().getApplicationContext()))
+//                        .centerCrop()
+//                        .get();
+
+                FutureTarget<Bitmap> futureTarget = GlideApp.with(getActivity())
+                        .asBitmap()
                         .load(videos[0].getThumbUrl())
-                        .resize(dpToPx(DETAIL_THUMB_WIDTH, getActivity().getApplicationContext()),
+                        .override(dpToPx(DETAIL_THUMB_WIDTH, getActivity().getApplicationContext()),
                                 dpToPx(DETAIL_THUMB_HEIGHT, getActivity().getApplicationContext()))
                         .centerCrop()
-                        .get();
-                row.setImageBitmap(getActivity(), poster);
-            } catch (IOException e) {
-                Log.e("VideoDetailsFragment", "Cannot load thumbnail for " + videos[0].getId(), e);
+                        .submit();
+                row.setImageBitmap(getActivity(), futureTarget.get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
 
             SparseArrayObjectAdapter adapter = new SparseArrayObjectAdapter();

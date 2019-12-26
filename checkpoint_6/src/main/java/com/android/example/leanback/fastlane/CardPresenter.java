@@ -20,7 +20,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
@@ -31,11 +30,9 @@ import android.widget.TextView;
 
 import com.android.example.leanback.R;
 import com.android.example.leanback.data.Video;
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
@@ -59,7 +56,7 @@ public class CardPresenter extends Presenter {
             mCardView = (ImageCardView) view;
             mDefaultCardImage = mContext.getResources().getDrawable(R.drawable.filmi);
             sharedOptions = new RequestOptions()
-                    .placeholder(R.drawable.ic_av_play_arrow) //设置“加载中”状态时显示的图片
+                    .placeholder(R.drawable.filmi) //设置“加载中”状态时显示的图片
                     .override(CARD_WIDTH, CARD_HEIGHT) //指定大小，无视imageView大小
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)   //既缓存全尺寸又缓存其他尺寸

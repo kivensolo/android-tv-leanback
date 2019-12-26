@@ -42,6 +42,7 @@ public class BootCompleteReceiver extends BroadcastReceiver {
         Intent recommendationIntent = new Intent(context, RecommendationsService.class);
         PendingIntent alarmIntent = PendingIntent.getService(context, 0, recommendationIntent, 0);
 
+        // 推荐数据定期半个小时更新
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 INITIAL_DELAY,
                 AlarmManager.INTERVAL_HALF_HOUR,

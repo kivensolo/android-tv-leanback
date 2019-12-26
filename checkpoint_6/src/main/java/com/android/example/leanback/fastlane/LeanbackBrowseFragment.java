@@ -118,7 +118,6 @@ public class LeanbackBrowseFragment extends BrowseFragment {
                     String thumbUrl = ((Video) item).getThumbUrl();
                     Log.d("ItemSelected","thumbUrl = " + thumbUrl);
                     bgHelper.setBackgroundUrl(thumbUrl);
-                    bgHelper.startBackgroundTimer();
                 }
 
             }

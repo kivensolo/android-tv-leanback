@@ -47,8 +47,8 @@ public class RecommendationsService extends IntentService {
     private static final int MAX_RECOMMENDATIONS = 3;
     public static final String EXTRA_BACKGROUND_IMAGE_URL = "background_image_url";
 
-    private static final int DETAIL_THUMB_WIDTH = 274;
-    private static final int DETAIL_THUMB_HEIGHT = 274;
+    private static final int DETAIL_THUMB_WIDTH = 225; //274
+    private static final int DETAIL_THUMB_HEIGHT = 225;
 
     public RecommendationsService() {
         super("RecommendationService");
